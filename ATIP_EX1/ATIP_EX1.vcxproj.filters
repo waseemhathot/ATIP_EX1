@@ -15,30 +15,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\HW1\file_IO.cpp">
+    <ClCompile Include="container.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\HW1\main.cpp">
+    <ClCompile Include="file_IO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\HW1\ship.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\HW1\container.cpp">
+    <ClCompile Include="ship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\HW1\container.h">
+    <ClInclude Include="container.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\HW1\file_IO.h">
+    <ClInclude Include="file_IO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\HW1\ship.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\HW1\project_constants.h">
+    <ClInclude Include="ship.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

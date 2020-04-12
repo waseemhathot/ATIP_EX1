@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="container.cpp" />
+    <ClCompile Include="file_IO.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ship.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="container.h" />
+    <ClInclude Include="file_IO.h" />
+    <ClInclude Include="ship.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{F258544D-6735-4F07-9CDC-A8A4D35B6E7E}</ProjectGuid>
@@ -147,18 +158,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\HW1\container.cpp" />
-    <ClCompile Include="..\..\..\HW1\file_IO.cpp" />
-    <ClCompile Include="..\..\..\HW1\main.cpp" />
-    <ClCompile Include="..\..\..\HW1\ship.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\HW1\container.h" />
-    <ClInclude Include="..\..\..\HW1\file_IO.h" />
-    <ClInclude Include="..\..\..\HW1\project_constants.h" />
-    <ClInclude Include="..\..\..\HW1\ship.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
