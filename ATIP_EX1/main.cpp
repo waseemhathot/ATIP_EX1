@@ -9,13 +9,13 @@
 int main() {
 
 
-    vector<vector<int>> lines = readShipPlanFromFile("C:/Users/wasse/Desktop/University/Year 7/Semester B/cpp/HW1/files/ship_plan_test.txt");
+    vector<vector<int>> lines = readShipPlanFromFile("path to file");
     printShipPlan(lines);
 
-    vector<string> lines2 = readShipRouteFromFile("C:/Users/wasse/Desktop/University/Year 7/Semester B/cpp/HW1/files/ship_route_test.txt");
+    vector<string> lines2 = readShipRouteFromFile("path to file");
     printShipRoute(lines2);
 
-    vector<vector<string>> lines3 = readPortCargoFromFile("C:/Users/wasse/Desktop/University/Year 7/Semester B/cpp/HW1/files/port_cargo_test.txt");
+    vector<vector<string>> lines3 = readPortCargoFromFile("path to file");
     printPortCargo(lines3);
 
     return EXIT_SUCCESS;
