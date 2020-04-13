@@ -12,17 +12,32 @@ using std::stringstream;
 ////////////////////////////////////////////// READ FROM FILE /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool checkLineFormat(std::string line, std::regex reg) {
+bool isLineFormatValid(std::string line, std::regex reg) {
 
 	if (!(std::regex_match(line, reg))) {
-		std::cout << "WARNING! Bad input: " << line << std::endl;
 		return false;
 	}
 
 	return true;
 }
 
-vector<vector<string>> readFileByLineIntoVector(const std::string& filename, const char delimiter, std::regex reg) {
+vector<string> getTokensFromLineIntoVector(string& line) { //takes tokens separated with whitespaces
+
+	vector<string> lineTokensVector;
+	std::smatch stringMatch;
+	std::regex tokensInlineRegex(InputFileConstants::getTokensInLineRegexstring);
+
+	string currentString = line;
+	while (std::regex_search(currentString, stringMatch, tokensInlineRegex)) {
+
+		lineTokensVector.push_back(stringMatch[0]);
+		currentString = stringMatch.suffix();
+	}
+
+	return lineTokensVector;
+}
+
+vector<vector<string>> readFileByLineIntoVector(const std::string& filename, std::regex reg) {
 
 	string line;
 	std::ifstream fin(filename);
@@ -33,22 +48,15 @@ vector<vector<string>> readFileByLineIntoVector(const std::string& filename, con
 		while (std::getline(fin, line)) {
 
 			vector<string> tokensInLine;
-			if (checkLineFormat(line, reg)) {
+			if (isLineFormatValid(line, reg)) {
 
-				stringstream ss(line);
-				string token;
-
-				while (std::getline(ss, token, delimiter)) {
-
-					token.erase(std::remove_if(token.begin(), token.end(), isspace), token.end()); //removes white spaces, incase of leading white space
-					tokensInLine.push_back(token);
-				}
-
+				tokensInLine = getTokensFromLineIntoVector(line);
 				result.push_back(tokensInLine);
 			}
+			else {
+				std::cout << "WARNING! Bad input: " << line << std::endl;
+			}
 		}
-
-
 
 		fin.close();
 		return result;
@@ -67,8 +75,9 @@ vector<vector<string>> readFileByLineIntoVector(const std::string& filename, con
 vector<vector<int>> readShipPlanFromFile(const std::string& filename) {
 
 	vector<vector<int>> shipPlan;
-	const std::regex shipPlanRegex("\\s*[1-9]+\\s*,\\s*[1-9]+\\s*,\\s*[1-9]+\\s*");
-	vector<vector<string>> fileLinesInVector = readFileByLineIntoVector(filename, InputFileConstants::shipPlanDelimiter, shipPlanRegex);
+	const std::regex shipPlanRegex(InputFileConstants::shipPlanRegexString);
+
+	vector<vector<string>> fileLinesInVector = readFileByLineIntoVector(filename, shipPlanRegex);
 
 	if (!fileLinesInVector.empty()) {
 
@@ -106,9 +115,9 @@ vector<string> readShipRouteFromFile(const std::string& filename) {
 
 
 	vector<string> shipRoute;
-	const std::regex shipRouteRegex("\\s*[A-Z]{5}\\s*");
+	const std::regex shipRouteRegex(InputFileConstants::shipRouteRegexString);
 
-	vector<vector<string>> fileLinesInVector = readFileByLineIntoVector(filename, InputFileConstants::shipRouteDelimiter, shipRouteRegex);
+	vector<vector<string>> fileLinesInVector = readFileByLineIntoVector(filename,  shipRouteRegex);
 
 	for (size_t i = 0; i < fileLinesInVector.size(); ++i) {
 
@@ -126,8 +135,9 @@ vector<string> readShipRouteFromFile(const std::string& filename) {
 vector<vector<string>> readPortCargoFromFile(const std::string& filename) {
 
 	vector<vector<string>> portCargo;
-	const std::regex portCargoRegex("\\s*([A-Z]{3}[UJZ]{1}[0-9]{7})\\s*[0-9]+\\s*[A-Z]{5}\\s*");
-	vector<vector<string>> fileLinesInVector = readFileByLineIntoVector(filename, InputFileConstants::portCargoDelimiter, portCargoRegex);
+	const std::regex portCargoRegex(InputFileConstants::portCargoRegexString);
+
+	vector<vector<string>> fileLinesInVector = readFileByLineIntoVector(filename, portCargoRegex);
 
 	return fileLinesInVector;
 }
