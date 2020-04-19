@@ -26,7 +26,7 @@ public:
     int getNumOfContainers();
     bool isThereSpaceAvailable();
     std::pair<int, int> getPos();
-    vector<string> getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort);
+    vector<vector<string>> getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort);
 };
 
 class ShipPlan {
@@ -48,10 +48,9 @@ public:
     int getNumOfContainersInColumn(int xPos, int yPos);
     int getShipCapacity();
     void loadContainer(Container* container);
-    vector<string> getInstructionsForUnloadAsVector(string& portCode);
-    std::map<std::pair<int, int>, int> createColumnToNumOfContainersToUnloadByPortMap(vector<string> idsOfContainersToUnload);
-    //Container& unloadContainer(string containerId, int floorIndex, int rowIndex, int colIndex);
-    //vector<ContainerPosition> findContainersByDest(string destinationCode);
+    void performInstructions(vector<string>& instructions);
+    vector<vector<string>> getInstructionsForUnloadAsVector(string& portCode);
+    std::map<std::pair<int, int>, int> createColumnToNumOfContainersToUnloadByPortMap(vector<string>& idsOfContainersToUnload);
 };
 
 

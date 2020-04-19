@@ -5,7 +5,6 @@
 
 using std::string;
 
-
 Container::Container(int weight, string destinationCode, string id) {
     weight_ = weight;
     destinationCode_ = destinationCode;

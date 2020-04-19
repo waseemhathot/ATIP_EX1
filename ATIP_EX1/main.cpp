@@ -9,7 +9,7 @@ using std::vector;
 int main() {
 
 
-    vector<vector<int>> lines = readShipPlanFromFile("path...");
+    vector<vector<int>> lines = readShipPlanFromFile("path ...");
     printShipPlan(lines);
 
     ShipPlan* plan = new ShipPlan(lines);
@@ -23,13 +23,13 @@ int main() {
     Container* container2 = new Container(5, "ISDRZ", "CGU3054383");
     plan->loadContainer(container2);
 
-    vector<string> instructions = plan->getInstructionsForUnloadAsVector(portCode);
+    vector<vector<string>> instructions = plan->getInstructionsForUnloadAsVector(portCode);
 
     std::cout << plan->getNumOfContainersInColumn(0, 0) << std::endl;
     std::cout << instructions.size() << std::endl;
-    std::cout << instructions.at(0) << std::endl;
-    std::cout << instructions.at(1) << std::endl;
-    std::cout << instructions.at(2) << std::endl;
+    std::cout << instructions.at(0).at(0) << std::endl;
+    std::cout << instructions.at(0).at(1) << std::endl;
+    std::cout << instructions.at(0).at(2) << std::endl;
 
 
 

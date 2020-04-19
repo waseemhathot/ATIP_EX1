@@ -59,18 +59,19 @@ std::pair<int, int> ShipPlanColumn::getPos() {
 	return std::make_pair(xPos_, yPos_);
 }
 
-vector<string> ShipPlanColumn::getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort) {
+vector<vector<string>> ShipPlanColumn::getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort) {
 
-	vector<string> instructions;
-	string currInstruction;
-	vector<string> loadBackInstructions;
+	vector<vector<string>> instructions;
+	vector<vector<string>> loadBackInstructions;
+	vector<string> currInstruction;
 	int containersToUnloadFound = 0;
+
 	for (size_t i = containers_.size() - 1; i >= 0 && containersToUnloadFound < numOfContainersToUnloadForPort; i--) {
 
 		string currContainerId = containers_.at(i)->getContainerId();
 		string currContainerPortCode = containers_.at(i)->getDestCode();
 
-		currInstruction = "U, " + currContainerId + ", " + std::to_string(i) + ", " + std::to_string(xPos_) + ", " + std::to_string(yPos_);
+		currInstruction = { "U", currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
 		instructions.push_back(currInstruction);
 
 		if (portCode == currContainerPortCode) {
@@ -79,8 +80,8 @@ vector<string> ShipPlanColumn::getInstructionsToUnloadContainer(string& portCode
 		}
 		else {
 
-			
-			currInstruction = "L, " + currContainerId + ", " + std::to_string(i) + ", " + std::to_string(xPos_) + ", " + std::to_string(yPos_);
+
+			currInstruction ={ "L", currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
 			loadBackInstructions.push_back(currInstruction);
 		}
 	}
@@ -180,15 +181,15 @@ void ShipPlan::loadContainer(Container* container) {
 	}
 }
 
-vector<string> ShipPlan::getInstructionsForUnloadAsVector(string& portCode) {
+vector<vector<string>> ShipPlan::getInstructionsForUnloadAsVector(string& portCode) {
 
 	vector<string> idsOfContainersToBeUnloaded = portsToContainersIdMap_[portCode];
-	vector<string> instructions;
+	vector<vector<string>> instructions;
 
 	std::map<std::pair<int, int>, int> colToNumOfContainersMap = createColumnToNumOfContainersToUnloadByPortMap(idsOfContainersToBeUnloaded);
+	vector<vector<string>> instrForCurrColumn;
 
 	std::map<std::pair<int, int>, int>::iterator it = colToNumOfContainersMap.begin();
-	vector<string> instrForCurrColumn;
 	while (it != colToNumOfContainersMap.end()) {
 
 		ShipPlanColumn* currColumn = plan_[it->first];
@@ -203,7 +204,7 @@ vector<string> ShipPlan::getInstructionsForUnloadAsVector(string& portCode) {
 	return instructions;
 }
 
-std::map<std::pair<int, int>, int> ShipPlan::createColumnToNumOfContainersToUnloadByPortMap(vector<string> idsOfContainersToUnload) {
+std::map<std::pair<int, int>, int> ShipPlan::createColumnToNumOfContainersToUnloadByPortMap(vector<string>& idsOfContainersToUnload) {
 
 	std::map<std::pair<int, int>, int> columnToNumOfContainersToUnloadByPortMap;
 	for (size_t i = 0; i < idsOfContainersToUnload.size(); i++) {
@@ -222,4 +223,9 @@ std::map<std::pair<int, int>, int> ShipPlan::createColumnToNumOfContainersToUnlo
 	}
 
 	return columnToNumOfContainersToUnloadByPortMap;
+}
+
+
+void ShipPlan::performInstructions(vector<string>& instructions) {
+
 }
