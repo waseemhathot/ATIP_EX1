@@ -12,15 +12,9 @@ class Container {
 
 public:
     Container(int weight, string destinationCode, string id);
-};
 
-
-class ContainerPosition {
-    int floorIndex_;
-    int rowIndex_;
-    int colIndex_;
-public:
-    ContainerPosition(int floorIndex, int rowIndex, int colIndex);
+    string getContainerId();
+    string getDestCode();
 };
 
 

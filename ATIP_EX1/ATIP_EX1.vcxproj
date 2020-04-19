@@ -23,11 +23,14 @@
     <ClCompile Include="file_IO.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ship.cpp" />
+    <ClCompile Include="ShipPlan.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="container.h" />
     <ClInclude Include="file_IO.h" />
+    <ClInclude Include="constants.h" />
     <ClInclude Include="ship.h" />
+    <ClInclude Include="ShipPlan.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
