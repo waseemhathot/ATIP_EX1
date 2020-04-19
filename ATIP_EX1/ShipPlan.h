@@ -23,6 +23,7 @@ public:
     int loadContainer(Container* container);
     void setColumnCapacity(int capacity);
     int getCapacity();
+    int getNumOfContainers();
     bool isThereSpaceAvailable();
     std::pair<int, int> getPos();
     vector<string> getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort);
@@ -44,6 +45,7 @@ public:
     ShipPlan(vector<vector<int>> shipPlanData);
 
     int getCapacityOfColumn(int xPos, int yPos);
+    int getNumOfContainersInColumn(int xPos, int yPos);
     int getShipCapacity();
     void loadContainer(Container* container);
     vector<string> getInstructionsForUnloadAsVector(string& portCode);

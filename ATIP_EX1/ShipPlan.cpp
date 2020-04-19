@@ -25,6 +25,7 @@ int ShipPlanColumn::loadContainer(Container* container) {
 		return EXIT_FAILURE;
 	}
 	containers_.push_back(container);
+	numOfContainersInColumn_ += 1;
 
 	return EXIT_SUCCESS;
 }
@@ -37,6 +38,11 @@ void ShipPlanColumn::setColumnCapacity(int capacity) {
 int ShipPlanColumn::getCapacity() {
 
 	return columnCapacity_;
+}
+
+int ShipPlanColumn::getNumOfContainers() {
+
+	return numOfContainersInColumn_;
 }
 
 bool ShipPlanColumn::isThereSpaceAvailable() {
@@ -56,16 +62,16 @@ std::pair<int, int> ShipPlanColumn::getPos() {
 vector<string> ShipPlanColumn::getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort) {
 
 	vector<string> instructions;
-	string instruction;
+	string currInstruction;
 	vector<string> loadBackInstructions;
 	int containersToUnloadFound = 0;
-	for (size_t i = 0; i < containers_.size() && containersToUnloadFound < numOfContainersToUnloadForPort; i++) {
+	for (size_t i = containers_.size() - 1; i >= 0 && containersToUnloadFound < numOfContainersToUnloadForPort; i--) {
 
 		string currContainerId = containers_.at(i)->getContainerId();
 		string currContainerPortCode = containers_.at(i)->getDestCode();
 
-		instruction = "U, " + currContainerId + ", " + std::to_string(i) + ", " + std::to_string(xPos_) + ", " + std::to_string(yPos_);
-		instructions.push_back(instruction);
+		currInstruction = "U, " + currContainerId + ", " + std::to_string(i) + ", " + std::to_string(xPos_) + ", " + std::to_string(yPos_);
+		instructions.push_back(currInstruction);
 
 		if (portCode == currContainerPortCode) {
 
@@ -73,8 +79,9 @@ vector<string> ShipPlanColumn::getInstructionsToUnloadContainer(string& portCode
 		}
 		else {
 
-			instruction = "L, " + currContainerId + ", " + std::to_string(i) + ", " + std::to_string(xPos_) + ", " + std::to_string(yPos_);
-			loadBackInstructions.push_back(instruction);
+			
+			currInstruction = "L, " + currContainerId + ", " + std::to_string(i) + ", " + std::to_string(xPos_) + ", " + std::to_string(yPos_);
+			loadBackInstructions.push_back(currInstruction);
 		}
 	}
 
@@ -123,6 +130,15 @@ int ShipPlan::getCapacityOfColumn(int xPos, int yPos) {
 	int capacity = column->getCapacity();
 
 	return capacity;
+}
+
+int ShipPlan::getNumOfContainersInColumn(int xPos, int yPos) {
+
+	std::pair<int, int> pos = std::make_pair(xPos, yPos);
+	ShipPlanColumn* column = plan_[pos];
+	int numOfContainers = column->getNumOfContainers();
+
+	return numOfContainers;
 }
 
 int ShipPlan::getShipCapacity() {
