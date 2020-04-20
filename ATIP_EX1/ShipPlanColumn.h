@@ -1,17 +1,12 @@
 #include <iostream>
-#include <vector>
-#include <map>
 #include "container.h"
 
 #ifndef SHIP_PLAN_COLUMN_H
 #define SHIP_PLAN_COLUMN_H
 
-using std::vector;
-using std::string;
-
 class ShipPlanColumn {
 
-    vector<Container*> containers_;
+    std::vector<Container*> containers_;
     int columnCapacity_;
     int numOfContainersInColumn_;
     int xPos_;
@@ -30,7 +25,7 @@ public:
     std::pair<int, int> getPos();
     int getXPos();
     int getYPos();
-    vector<vector<string>> getInstructionsToUnloadContainers(string& portCode, int numOfContainersToUnloadForPort);
+    std::vector<std::vector<std::string>> getInstructionsToUnloadContainers(std::string& portCode, int numOfContainersToUnloadForPort);
 };
 
 

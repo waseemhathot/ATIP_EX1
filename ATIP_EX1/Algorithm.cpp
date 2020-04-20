@@ -14,7 +14,7 @@ Algorithm::~Algorithm() {
 	delete shipPlan_;
 }
 
-bool Algorithm::isLineFormatValid(std::string line, std::regex reg) {
+bool Algorithm::isLineFormatValid(std::string& line, std::regex reg) {
 	if (!(std::regex_match(line, reg))) {
 		return false;
 	}
@@ -61,7 +61,7 @@ std::vector<std::vector<std::string>> Algorithm::readFileByLineIntoVector(const 
 		fin.close();
 		return result;
 	}
-	else std::cout << "Unable to open file";
+	else std::cout << "Unable to open file" << std::endl;
 
 	return result;
 }
@@ -97,7 +97,6 @@ void Algorithm::readShipPlan(const std::string& filePath) {
 		std::vector<int> firstLine = { numFloors, numContainersInX, numContainersInY };
 		shipPlan.push_back(firstLine);
 
-		std::vector<int> planLine;
 		for (size_t i = 1; i < fileLinesInVector.size(); ++i) {
 
 			int posX = stoi(fileLinesInVector.at(i).at(0));
@@ -107,7 +106,7 @@ void Algorithm::readShipPlan(const std::string& filePath) {
 			if (posX <= numContainersInX && posX >= 0 && posY <= numContainersInY && posY >= 0 && actualNumOfFloors < numFloors
 				&& actualNumOfFloors >= 0) {
 
-				planLine = { posX, posY, actualNumOfFloors };
+				std::vector<int> planLine = { posX, posY, actualNumOfFloors };
 				shipPlan.push_back(planLine);
 			}
 		}
@@ -116,30 +115,35 @@ void Algorithm::readShipPlan(const std::string& filePath) {
 	shipPlan_ = new ShipPlan(shipPlan);
 }
 
-vector<vector<string>> Algorithm::readPortCargo(const std::string& filePath) {
+std::vector<std::vector<std::string>> Algorithm::readPortCargo(const std::string& filePath) {
 
-	vector<vector<string>> portCargo;
+	std::vector<std::vector<std::string>> portCargo;
 	const std::regex portCargoRegex(InputFileConstants::portCargoRegexString);
 
-	vector<vector<string>> fileLinesInVector = readFileByLineIntoVector(filePath, portCargoRegex);
+	std::vector<std::vector<std::string>> fileLinesInVector = readFileByLineIntoVector(filePath, portCargoRegex);
 
 	return fileLinesInVector;
 }
 
-void Algorithm::writeLinesToFile(const std::string& filePath, std::vector<std::string> lines) {
+void Algorithm::writeLinesToFile(const std::string& filePath, std::vector<std::string>& lines) {
 
-	std::ofstream fout(filePath);
-	for (size_t i = 0; i < lines.size(); i++) {
-		fout << lines.at(i) << "\n";
+	std::ofstream fout(filePath, std::ofstream::app);
+
+	if (fout.is_open()) {
+
+		for (size_t i = 0; i < lines.size(); i++) {
+			fout << lines.at(i) << "\n";
+		}
 	}
+	else std::cout << "Unable to open file" << std::endl;
 
 	fout.close();
 }
 
 void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile, const std::string& pathToOutputInstructionsFile) {
 
-	std::vector<string> instructionLines;
-	string currPortCode = shipRoute_.at(portIndex_);
+	std::vector<std::string> instructionLines;
+	std::string currPortCode = shipRoute_.at(portIndex_);
 
 	std::vector<std::vector<std::string>> cargoData = readPortCargo(pathToInputCargoFile);
 	std::vector<Container*> containersToLoad = getContainersToLoadForCargo(cargoData);
@@ -166,46 +170,40 @@ void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile,
 } 
 
 
-vector<vector<string>> Algorithm::getInstructionsForUnloadAtPort(string& portCode) {
+std::vector<std::vector<std::string>> Algorithm::getInstructionsForUnloadAtPort(std::string& portCode) {
 
-	vector<vector<string>> instructions = shipPlan_->getInstructionsForUnloadAtPort(portCode);
+	std::vector<std::vector<std::string>> instructions = shipPlan_->getInstructionsForUnloadAtPort(portCode);
 	return instructions;
 }
 
-std::vector<Container*> Algorithm::getContainersToLoadForCargo(std::vector<std::vector<std::string>> cargoData) {
+std::vector<Container*> Algorithm::getContainersToLoadForCargo(std::vector<std::vector<std::string>>& cargoData) {
 
 	std::vector<Container*> containersToLoad;
-	Container* currContainer;
 	for (size_t i = 0; i < cargoData.size(); i++) {
 
-		string containerId = cargoData.at(i).at(0);
+		std::string containerId = cargoData.at(i).at(0);
 		int containerWeight = stoi(cargoData.at(i).at(1));
-		string destCode = cargoData.at(i).at(2);
-		currContainer = new Container(containerWeight, destCode, containerId);
+		std::string destCode = cargoData.at(i).at(2);
+		Container* currContainer = new Container(containerWeight, destCode, containerId);
 		containersToLoad.push_back(currContainer);
 	}
 
 	return containersToLoad;
 }
 
-std::vector<Container*> Algorithm::unloadContainersAtPort(std::vector<std::vector<std::string>>unloadInstructions, const string& outputFilePath) {
+std::vector<Container*> Algorithm::unloadContainersAtPort(std::vector<std::vector<std::string>>& unloadInstructions, const std::string& outputFilePath) {
 
 	std::vector<Container*> unloadedContainers;
 	std::vector<std::string> instructionLines;
 
-	std::string floor;
-	std::string xPos;
-	std::string yPos;
-	std::string currInstructionLine;
-	Container* currContainer;
 	for (size_t i = 0; i < unloadInstructions.size(); i++) {
 
-		floor = unloadInstructions.at(i).at(1);
-		xPos = unloadInstructions.at(i).at(2);
-		yPos = unloadInstructions.at(i).at(3);
-		currContainer = shipPlan_->unloadContainer(stoi(xPos), stoi(yPos));
+		std::string floor = unloadInstructions.at(i).at(1);
+		std::string xPos = unloadInstructions.at(i).at(2);
+		std::string yPos = unloadInstructions.at(i).at(3);
+		Container* currContainer = shipPlan_->unloadContainer(stoi(xPos), stoi(yPos));
+		std::string currInstructionLine = "U, " + currContainer->getContainerId() + ", " + floor + ", " + xPos + ", " + yPos;
 
-		currInstructionLine = "U, " + currContainer->getContainerId() + ", " + floor + ", " + xPos + ", " + yPos;
 		instructionLines.push_back(currInstructionLine);
 		unloadedContainers.push_back(currContainer);
 	}
@@ -222,21 +220,28 @@ std::vector<int> Algorithm::findSpaceToLoad() { //returns <floor, xpos, ypos>
 }
 
 
-void Algorithm::loadContainers(vector<Container*> containers, const string& outputFilePath) {
+void Algorithm::loadContainers(std::vector<Container*>& containers, const std::string& outputFilePath) {
 
 	std::vector<std::string> instructionLines;
-	std::string currInstructionLine;
-	std::vector<int> foundLocation;
 	for (size_t i = 0; i < containers.size(); i++) {
 
-		foundLocation = findSpaceToLoad();
+		std::vector<int> foundLocation = findSpaceToLoad();
 		if (foundLocation.empty()) {
 
 			break;
 		}
-		
-		shipPlan_->loadContainer(containers.at(i), foundLocation.at(0), foundLocation.at(1), foundLocation.at(2));
+
+		int floor = foundLocation.at(0);
+		int xPos = foundLocation.at(1);
+		int yPos = foundLocation.at(2);
+		Container* currContainer = containers.at(i);
+
+		shipPlan_->loadContainer(currContainer, floor, xPos, yPos);
+		std::string currInstructionLine = "L, " + currContainer->getContainerId() + ", " + std::to_string(floor) + ", " + std::to_string(xPos) + ", " + std::to_string(yPos);
+		instructionLines.push_back(currInstructionLine);
 	}
+
+	writeLinesToFile(outputFilePath, instructionLines);
 }
 
 std::vector<std::string> Algorithm::getShipRoute() {

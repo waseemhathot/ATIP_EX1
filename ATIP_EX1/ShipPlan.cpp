@@ -1,14 +1,10 @@
 #include <iostream>
-#include <vector>
-#include <map>
 #include <cstdlib>
 #include "ShipPlan.h"
 
-using std::vector;
-using std::string;
 
 
-ShipPlan::ShipPlan(vector<vector<int>> shipPlanData) : numOfContainersOnShip_(0) {
+ShipPlan::ShipPlan(std::vector<std::vector<int>> shipPlanData) : numOfContainersOnShip_(0) {
 
 	numOfFloors_ = shipPlanData.at(0).at(0);
 	containersInXDim_ = shipPlanData.at(0).at(1);
@@ -74,7 +70,7 @@ int ShipPlan::getShipCapacity() {
 }
 
 
-vector<int> ShipPlan::findSpaceToLoad() {
+std::vector<int> ShipPlan::findSpaceToLoad() {
 
 	bool isSpaceFound = false;
 	std::vector<int> location;
@@ -115,13 +111,12 @@ Container* ShipPlan::unloadContainer(int xPos, int yPos) {
 	return unloadedContainer;
 }
 
-vector<vector<string>> ShipPlan::getInstructionsForUnloadAtPort(string& portCode) {
+std::vector<std::vector<std::string>> ShipPlan::getInstructionsForUnloadAtPort(std::string& portCode) {
 
-	vector<string> idsOfContainersToBeUnloaded = portsToContainersIdMap_[portCode];
-	vector<vector<string>> instructions;
+	std::vector<std::string> idsOfContainersToBeUnloaded = portsToContainersIdMap_[portCode];
+	std::vector<std::vector<std::string>> instructions;
 
 	std::map<std::pair<int, int>, int> colToNumOfContainersMap = createColumnToNumOfContainersToUnloadByPortMap(idsOfContainersToBeUnloaded);
-	vector<vector<string>> instrForCurrColumn;
 	std::map<std::pair<int, int>, int>::iterator it = colToNumOfContainersMap.begin();
 
 	while (it != colToNumOfContainersMap.end()) {
@@ -129,7 +124,7 @@ vector<vector<string>> ShipPlan::getInstructionsForUnloadAtPort(string& portCode
 		ShipPlanColumn* currColumn = plan_[it->first];
 		int numOfContainersToUnload = it->second;
 
-		instrForCurrColumn = currColumn->getInstructionsToUnloadContainers(portCode, numOfContainersToUnload);
+		std::vector<std::vector<std::string>> instrForCurrColumn = currColumn->getInstructionsToUnloadContainers(portCode, numOfContainersToUnload);
 		instructions.insert(instructions.end(), instrForCurrColumn.begin(), instrForCurrColumn.end());
 
 		it++;
@@ -140,7 +135,7 @@ vector<vector<string>> ShipPlan::getInstructionsForUnloadAtPort(string& portCode
 }
 
 
-std::map<std::pair<int, int>, int> ShipPlan::createColumnToNumOfContainersToUnloadByPortMap(vector<string>& idsOfContainersToUnload) {
+std::map<std::pair<int, int>, int> ShipPlan::createColumnToNumOfContainersToUnloadByPortMap(std::vector<std::string>& idsOfContainersToUnload) {
 
 	std::map<std::pair<int, int>, int> columnToNumOfContainersToUnloadByPortMap;
 	for (size_t i = 0; i < idsOfContainersToUnload.size(); i++) {

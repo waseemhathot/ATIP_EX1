@@ -1,21 +1,20 @@
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 #ifndef CONTAINER_H
 
-using std::string;
-
 class Container {
     int weight_; //in KG.
-    string destinationCode_; //5 english letters
-    string id_; //ISO 6346 standard
+    std::string destinationCode_; //5 english letters
+    std::string id_; //ISO 6346 standard
 
 public:
-    Container(int weight, string destinationCode, string id);
+    Container(int weight, std::string destinationCode, std::string id);
 
-    string getContainerId();
-    string getDestCode();
+    std::string getContainerId();
+    std::string getDestCode();
 };
-
 
 #endif

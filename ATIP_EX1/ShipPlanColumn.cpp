@@ -1,12 +1,8 @@
 #include <iostream>
-#include <vector>
-#include <map>
 #include <cstdlib>
-#include <string>
 #include "ShipPlanColumn.h"
 
-using std::vector;
-using std::string;
+
 
 ShipPlanColumn::ShipPlanColumn(int columnCapacity, int xPos, int yPos) :
 	columnCapacity_(columnCapacity),
@@ -84,18 +80,17 @@ int ShipPlanColumn::getYPos() {
 	return yPos_;
 }
 
-vector<vector<string>> ShipPlanColumn::getInstructionsToUnloadContainers(string& portCode, int numOfContainersToUnloadForPort) {
+std::vector<std::vector<std::string>> ShipPlanColumn::getInstructionsToUnloadContainers(std::string& portCode, int numOfContainersToUnloadForPort) {
 
-	vector<vector<string>> instructions;
-	vector<string> currInstruction;
+	std::vector<std::vector<std::string>> instructions;
 	int containersToUnloadFound = 0;
 
 	for (size_t i = containers_.size() - 1; i >= 0 && containersToUnloadFound < numOfContainersToUnloadForPort; i--) {
 
-		string currContainerId = containers_.at(i)->getContainerId();
-		string currContainerPortCode = containers_.at(i)->getDestCode();
+		std::string currContainerId = containers_.at(i)->getContainerId();
+		std::string currContainerPortCode = containers_.at(i)->getDestCode();
 
-		currInstruction = { currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
+		std::vector<std::string> currInstruction = { currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
 		instructions.push_back(currInstruction);
 
 		if (portCode == currContainerPortCode) {
