@@ -3,34 +3,36 @@
 #include <cstdlib>
 #include "file_IO.h"
 #include "ShipPlan.h"
+#include <fstream>
 
 using std::vector;
 
 int main() {
 
 
-    vector<vector<int>> lines = readShipPlanFromFile("path ...");
-    printShipPlan(lines);
+    //vector<vector<int>> lines = readShipPlanFromFile("path to file");
+    //printShipPlan(lines);
 
-    ShipPlan* plan = new ShipPlan(lines);
-    int res = plan->getCapacityOfColumn(0, 0);
-    int res2 = plan->getShipCapacity();
+    //ShipPlan* plan = new ShipPlan(lines);
+    //int res = plan->getCapacityOfColumn(0, 0);
+    //int res2 = plan->getShipCapacity();
 
-    string portCode = "ALDRZ";
-    string containerId = "CSQU3054383";
-    Container* container = new Container(5, portCode, containerId);
-    plan->loadContainer(container);
-    Container* container2 = new Container(5, "ISDRZ", "CGU3054383");
-    plan->loadContainer(container2);
+    //string portCode = "ALDRZ";
+    //string containerId = "CSQU3054383";
+    //Container* container = new Container(5, portCode, containerId);
+    //plan->loadContainer(container);
+    //Container* container2 = new Container(5, "ISDRZ", "CGU3054383");
+    //plan->loadContainer(container2);
 
-    vector<vector<string>> instructions = plan->getInstructionsForUnloadAsVector(portCode);
+    //vector<vector<string>> instructions = plan->getInstructionsForUnloadAsVector(portCode);
 
-    std::cout << plan->getNumOfContainersInColumn(0, 0) << std::endl;
-    std::cout << instructions.size() << std::endl;
-    std::cout << instructions.at(0).at(0) << std::endl;
-    std::cout << instructions.at(0).at(1) << std::endl;
-    std::cout << instructions.at(0).at(2) << std::endl;
+    //std::cout << plan->getNumOfContainersInColumn(0, 0) << std::endl;
+    //std::cout << instructions.size() << std::endl;
+    //std::cout << instructions.at(0).at(0) << std::endl;
+    //std::cout << instructions.at(0).at(1) << std::endl;
+    //std::cout << instructions.at(0).at(2) << std::endl;
 
+    //delete plan;
 
 
     //vector<string> lines2 = readShipRouteFromFile("path to file");

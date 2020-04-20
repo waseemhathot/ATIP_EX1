@@ -2,96 +2,10 @@
 #include <vector>
 #include <map>
 #include <cstdlib>
-#include "file_IO.h"
 #include "ShipPlan.h"
 
 using std::vector;
 using std::string;
-using Route = std::vector<string>;
-
-
-
-ShipPlanColumn::ShipPlanColumn(int columnCapacity, int xPos, int yPos) :
-	columnCapacity_(columnCapacity),
-	numOfContainersInColumn_(0),
-	yPos_(yPos),
-	xPos_(xPos)
-{}
-
-int ShipPlanColumn::loadContainer(Container* container) {
-
-	if (containers_.size() == columnCapacity_) {
-
-		return EXIT_FAILURE;
-	}
-	containers_.push_back(container);
-	numOfContainersInColumn_ += 1;
-
-	return EXIT_SUCCESS;
-}
-
-void ShipPlanColumn::setColumnCapacity(int capacity) {
-
-	columnCapacity_ = capacity;
-}
-
-int ShipPlanColumn::getCapacity() {
-
-	return columnCapacity_;
-}
-
-int ShipPlanColumn::getNumOfContainers() {
-
-	return numOfContainersInColumn_;
-}
-
-bool ShipPlanColumn::isThereSpaceAvailable() {
-
-	if (numOfContainersInColumn_ != columnCapacity_) {
-
-		return true;
-	}
-	return false;
-}
-
-std::pair<int, int> ShipPlanColumn::getPos() {
-
-	return std::make_pair(xPos_, yPos_);
-}
-
-vector<vector<string>> ShipPlanColumn::getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort) {
-
-	vector<vector<string>> instructions;
-	vector<vector<string>> loadBackInstructions;
-	vector<string> currInstruction;
-	int containersToUnloadFound = 0;
-
-	for (size_t i = containers_.size() - 1; i >= 0 && containersToUnloadFound < numOfContainersToUnloadForPort; i--) {
-
-		string currContainerId = containers_.at(i)->getContainerId();
-		string currContainerPortCode = containers_.at(i)->getDestCode();
-
-		currInstruction = { "U", currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
-		instructions.push_back(currInstruction);
-
-		if (portCode == currContainerPortCode) {
-
-			containersToUnloadFound += 1;
-		}
-		else {
-
-
-			currInstruction ={ "L", currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
-			loadBackInstructions.push_back(currInstruction);
-		}
-	}
-
-	instructions.insert(instructions.end(), loadBackInstructions.begin(), loadBackInstructions.end());
-
-	return instructions;
-}
-
-
 
 
 ShipPlan::ShipPlan(vector<vector<int>> shipPlanData) : numOfContainersOnShip_(0) {
@@ -122,6 +36,18 @@ ShipPlan::ShipPlan(vector<vector<int>> shipPlanData) : numOfContainersOnShip_(0)
 
 		shipCapacity_ = shipCapacity_ - (numOfFloors_ - actualNumOfFloors);
 	}
+}
+
+ShipPlan::~ShipPlan() {
+
+	std::map<std::pair<int, int>, ShipPlanColumn*>::iterator it = plan_.begin();
+	while (it != plan_.end()) {
+		delete it->second;
+		it++;
+	}
+	containersToColumnMap_.clear();
+	plan_.clear();
+	portsToContainersIdMap_.clear();
 }
 
 int ShipPlan::getCapacityOfColumn(int xPos, int yPos) {
@@ -181,6 +107,22 @@ void ShipPlan::loadContainer(Container* container) {
 	}
 }
 
+bool ShipPlan::unloadContainer(string& containerId) {
+
+	if (containersToColumnMap_.find(containerId) == containersToColumnMap_.end()) {
+		return false;
+	}
+
+	ShipPlanColumn* columnOfTheContainer = containersToColumnMap_[containerId];
+	columnOfTheContainer->unloadTopContainer(containerId);
+	delete columnOfTheContainer;
+
+	containersToColumnMap_.erase(containerId);
+	numOfContainersOnShip_ -= 1;
+
+	return true;
+}
+
 vector<vector<string>> ShipPlan::getInstructionsForUnloadAsVector(string& portCode) {
 
 	vector<string> idsOfContainersToBeUnloaded = portsToContainersIdMap_[portCode];
@@ -201,6 +143,7 @@ vector<vector<string>> ShipPlan::getInstructionsForUnloadAsVector(string& portCo
 		it++;
 	}
 
+	colToNumOfContainersMap.clear();
 	return instructions;
 }
 
@@ -225,7 +168,3 @@ std::map<std::pair<int, int>, int> ShipPlan::createColumnToNumOfContainersToUnlo
 	return columnToNumOfContainersToUnloadByPortMap;
 }
 
-
-void ShipPlan::performInstructions(vector<string>& instructions) {
-
-}

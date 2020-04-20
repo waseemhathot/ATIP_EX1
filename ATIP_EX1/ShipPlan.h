@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "container.h"
+#include "ShipPlanColumn.h"
 
 #ifndef SHIP_PLAN_H
 #define SHIP_PLAN_H
@@ -9,25 +9,6 @@
 using std::vector;
 using std::string;
 
-class ShipPlanColumn {
-
-    vector<Container*> containers_;
-    int columnCapacity_;
-    int numOfContainersInColumn_;
-    int xPos_;
-    int yPos_;
-
-public:
-
-    ShipPlanColumn(int columnCapacity, int xPos, int yPos);
-    int loadContainer(Container* container);
-    void setColumnCapacity(int capacity);
-    int getCapacity();
-    int getNumOfContainers();
-    bool isThereSpaceAvailable();
-    std::pair<int, int> getPos();
-    vector<vector<string>> getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort);
-};
 
 class ShipPlan {
 
@@ -43,15 +24,14 @@ class ShipPlan {
 public:
 
     ShipPlan(vector<vector<int>> shipPlanData);
-
+    ~ShipPlan();
     int getCapacityOfColumn(int xPos, int yPos);
     int getNumOfContainersInColumn(int xPos, int yPos);
     int getShipCapacity();
     void loadContainer(Container* container);
-    void performInstructions(vector<string>& instructions);
+    bool unloadContainer(string& containerId);
     vector<vector<string>> getInstructionsForUnloadAsVector(string& portCode);
     std::map<std::pair<int, int>, int> createColumnToNumOfContainersToUnloadByPortMap(vector<string>& idsOfContainersToUnload);
 };
-
 
 #endif
