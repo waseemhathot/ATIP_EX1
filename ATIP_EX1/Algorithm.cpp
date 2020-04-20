@@ -69,7 +69,7 @@ std::vector<std::vector<std::string>> Algorithm::readFileByLineIntoVector(const 
 }
 
 
-void Algorithm::readShipRoute(std::string& filePath) {
+void Algorithm::readShipRoute(const std::string& filePath) {
 
 	std::vector<std::string> shipRoute;
 	const std::regex shipRouteRegex(InputFileConstants::shipRouteRegexString);
@@ -83,7 +83,7 @@ void Algorithm::readShipRoute(std::string& filePath) {
 	shipRoute_ = shipRoute;
 }
 
-void Algorithm::readShipPlan(std::string& filePath) {
+void Algorithm::readShipPlan(const std::string& filePath) {
 
 	std::vector<std::vector<int>> shipPlan;
 	const std::regex shipPlanRegex(InputFileConstants::shipPlanRegexString);
@@ -117,3 +117,43 @@ void Algorithm::readShipPlan(std::string& filePath) {
 
 	shipPlan_ = new ShipPlan(shipPlan);
 }
+
+vector<vector<string>> Algorithm::readPortCargo(const std::string& filePath) {
+
+	vector<vector<string>> portCargo;
+	const std::regex portCargoRegex(InputFileConstants::portCargoRegexString);
+
+	vector<vector<string>> fileLinesInVector = readFileByLineIntoVector(filePath, portCargoRegex);
+
+	return fileLinesInVector;
+}
+
+void Algorithm::writeLinesToFile(const std::string& filePath, std::vector<std::string> lines) {
+
+	std::ofstream fout(filePath);
+	for (size_t i = 0; i < lines.size(); i++) {
+		fout << lines.at(i) << "\n";
+	}
+
+	fout.close();
+}
+
+void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile, const std::string& pathToOutputInstructionsFile) {
+
+	std::vector<Container*> containersToLoad;
+	std::vector<string> instructionLines;
+	std::vector<std::vector<std::string>> cargoData = readPortCargo(pathToInputCargoFile);
+
+	Container* currContainer;
+	for (size_t i = 0; i < cargoData.size(); i++) {
+
+		string containerId = cargoData.at(i).at(0);
+		int containerWeight = stoi(cargoData.at(i).at(1));
+		string destCode = cargoData.at(i).at(2);
+		currContainer = new Container(containerWeight, destCode, containerId);
+		containersToLoad.push_back(currContainer);
+	}
+}
+
+
+
