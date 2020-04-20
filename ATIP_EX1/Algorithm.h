@@ -11,21 +11,29 @@ class Algorithm {
 
 	ShipPlan* shipPlan_;
 	std::vector<std::string> shipRoute_;
+	int portIndex_;
 
 public:
 	Algorithm();
 	~Algorithm();
 	
-	bool isLineFormatValid(std::string line, std::regex reg);
-	std::vector<std::string> getTokensFromLineIntoVector(std::string& line);
-	std::vector<std::vector<std::string>> readFileByLineIntoVector(const std::string& filename, std::regex reg);
+
 	void readShipPlan(const std::string& filePath);
 	void readShipRoute(const std::string& filePath);
+	std::vector<std::string> getShipRoute();
 	void getInstructionsForCargo(const std::string& pathToInputCargoFile, const std::string& pathToOutputInstructionsFile);
 
 private:
+	bool isLineFormatValid(std::string line, std::regex reg);
+	std::vector<std::string> getTokensFromLineIntoVector(std::string& line);
+	std::vector<std::vector<std::string>> readFileByLineIntoVector(const std::string& filename, std::regex reg);
 	std::vector<std::vector<std::string>> readPortCargo(const std::string& filePath);
-	void writeLinesToFile(const std::string& filePath, std::vector<std::string> lines)
+	void writeLinesToFile(const std::string& filePath, std::vector<std::string> lines);
+	std::vector<int> findSpaceToLoad();
+	std::vector<std::vector<std::string>> getInstructionsForUnloadAtPort(string& portCode);
+	std::vector<Container*> getContainersToLoadForCargo(std::vector<std::vector<std::string>> cargoData);
+	std::vector<Container*> unloadContainersAtPort(std::vector<std::vector<std::string>>unloadInstructions, const string& outputFilePath);
+	void loadContainers(vector<Container*> containers, const string& outputFilePath);
 };
 
 #endif

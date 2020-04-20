@@ -17,4 +17,7 @@ namespace InputFileConstants {
 	const std::string getTokensInLineRegexstring = "[^\\s,]+";
 }
 
+
+enum ShipOperation { L, U, R, M };
+
 #endif

@@ -38,19 +38,12 @@ bool ShipPlanColumn::loadContainer(Container* container) {
 	return true;
 }
 
-bool ShipPlanColumn::unloadTopContainer(string& containerId) {
+Container* ShipPlanColumn::unloadTopContainer() {
 
-
-	string topContainerId = containers_.at(numOfContainersInColumn_ - 1)->getContainerId();
-
-	if (numOfContainersInColumn_ == 0 || containerId != topContainerId) {
-
-		std::cout << "ERROR: container not on top or no container on that position" << std::endl;
-		return false;
-	}
-
+	Container* topContainer = containers_.at(numOfContainersInColumn_ - 1);
 	containers_.pop_back();
-	return true;
+
+	return topContainer;
 }
 
 void ShipPlanColumn::setColumnCapacity(int capacity) {
@@ -82,10 +75,18 @@ std::pair<int, int> ShipPlanColumn::getPos() {
 	return std::make_pair(xPos_, yPos_);
 }
 
-vector<vector<string>> ShipPlanColumn::getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort) {
+int ShipPlanColumn::getXPos() {
+	
+	return xPos_;
+}
+int ShipPlanColumn::getYPos() {
+
+	return yPos_;
+}
+
+vector<vector<string>> ShipPlanColumn::getInstructionsToUnloadContainers(string& portCode, int numOfContainersToUnloadForPort) {
 
 	vector<vector<string>> instructions;
-	vector<vector<string>> loadBackInstructions;
 	vector<string> currInstruction;
 	int containersToUnloadFound = 0;
 
@@ -94,22 +95,14 @@ vector<vector<string>> ShipPlanColumn::getInstructionsToUnloadContainer(string& 
 		string currContainerId = containers_.at(i)->getContainerId();
 		string currContainerPortCode = containers_.at(i)->getDestCode();
 
-		currInstruction = { "U", currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
+		currInstruction = { currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
 		instructions.push_back(currInstruction);
 
 		if (portCode == currContainerPortCode) {
 
 			containersToUnloadFound += 1;
 		}
-		else {
-
-
-			currInstruction = { "L", currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
-			loadBackInstructions.push_back(currInstruction);
-		}
 	}
-
-	instructions.insert(instructions.end(), loadBackInstructions.begin(), loadBackInstructions.end());
 
 	return instructions;
 }

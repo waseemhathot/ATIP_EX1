@@ -28,9 +28,10 @@ public:
     int getCapacityOfColumn(int xPos, int yPos);
     int getNumOfContainersInColumn(int xPos, int yPos);
     int getShipCapacity();
-    void loadContainer(Container* container);
-    bool unloadContainer(string& containerId);
-    vector<vector<string>> getInstructionsForUnloadAsVector(string& portCode);
+    vector<int> findSpaceToLoad();
+    void loadContainer(Container* container, int floor, int xPos, int yPos);
+    Container* unloadContainer(int xPos, int yPos);
+    vector<vector<string>> getInstructionsForUnloadAtPort(string& portCode);
     std::map<std::pair<int, int>, int> createColumnToNumOfContainersToUnloadByPortMap(vector<string>& idsOfContainersToUnload);
 };
 

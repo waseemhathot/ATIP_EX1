@@ -10,7 +10,7 @@ using std::vector;
 int main() {
 
 
-    vector<vector<int>> lines = readShipPlanFromFile("C:/Users/wasse/Desktop/University/Year 7/Semester B/cpp/HW1/ship_plan_test.txt");
+   /* vector<vector<int>> lines = readShipPlanFromFile("C:/Users/wasse/Desktop/University/Year 7/Semester B/cpp/HW1/ship_plan_test.txt");
     printShipPlan(lines);
 
     ShipPlan* plan = new ShipPlan(lines);
@@ -32,7 +32,7 @@ int main() {
     std::cout << instructions.at(0).at(1) << std::endl;
     std::cout << instructions.at(0).at(2) << std::endl;
 
-    delete plan;
+    delete plan;*/
 
 
     //vector<string> lines2 = readShipRouteFromFile("path to file");

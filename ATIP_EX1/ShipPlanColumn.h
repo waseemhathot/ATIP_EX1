@@ -22,13 +22,15 @@ public:
     ShipPlanColumn(int columnCapacity, int xPos, int yPos);
     ~ShipPlanColumn();
     bool loadContainer(Container* container);
-    bool unloadTopContainer(string& containerId);
+    Container* unloadTopContainer();
     void setColumnCapacity(int capacity);
     int getCapacity();
     int getNumOfContainers();
     bool isThereSpaceAvailable();
     std::pair<int, int> getPos();
-    vector<vector<string>> getInstructionsToUnloadContainer(string& portCode, int numOfContainersToUnloadForPort);
+    int getXPos();
+    int getYPos();
+    vector<vector<string>> getInstructionsToUnloadContainers(string& portCode, int numOfContainersToUnloadForPort);
 };
 
 

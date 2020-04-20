@@ -73,71 +73,63 @@ int ShipPlan::getShipCapacity() {
 	return shipCapacity_;
 }
 
-void ShipPlan::loadContainer(Container* container) {
 
+vector<int> ShipPlan::findSpaceToLoad() {
+
+	bool isSpaceFound = false;
+	std::vector<int> location;
 	std::map<std::pair<int, int>, ShipPlanColumn*>::iterator it = plan_.begin();
-	bool isContainerLoaded = false;
-	string containerId = container->getContainerId();
-	string containerDestPort = container->getDestCode();
-
-	while (!isContainerLoaded && it != plan_.end()) {
+	while (!isSpaceFound && it != plan_.end()) {
 
 		ShipPlanColumn* column = it->second;
 		if (column->isThereSpaceAvailable()) {
-
-			column->loadContainer(container);
-			containersToColumnMap_[container->getContainerId()] = column;
-
-			if (portsToContainersIdMap_.find(containerDestPort) != portsToContainersIdMap_.end()) {
-
-				portsToContainersIdMap_[containerDestPort].push_back(containerId);
-			}
-
-			else {
-
-				vector<string> containerIds;
-				containerIds.push_back(containerId);
-				portsToContainersIdMap_[containerDestPort] = containerIds;
-			}
-
-			isContainerLoaded = true;
+			
+			isSpaceFound = true;
+			int xPos = column->getXPos();
+			int yPos = column->getYPos();
+			int floor = column->getNumOfContainers();
+			location = { floor, xPos, yPos };
 		}
-
-		it++;
 	}
+
+	return location;
 }
 
-bool ShipPlan::unloadContainer(string& containerId) {
+void ShipPlan::loadContainer(Container* container, int floor, int xPos, int yPos) {
 
-	if (containersToColumnMap_.find(containerId) == containersToColumnMap_.end()) {
-		return false;
-	}
+	std::pair<int, int> pos = std::make_pair(xPos, yPos);
+	ShipPlanColumn* selectedColumn = plan_[pos];
+	selectedColumn->loadContainer(container);
+	containersToColumnMap_[container->getContainerId()] = selectedColumn;
+	numOfContainersOnShip_ += 1;
+}
 
-	ShipPlanColumn* columnOfTheContainer = containersToColumnMap_[containerId];
-	columnOfTheContainer->unloadTopContainer(containerId);
-	delete columnOfTheContainer;
+Container* ShipPlan::unloadContainer(int xPos, int yPos) {
 
-	containersToColumnMap_.erase(containerId);
+	ShipPlanColumn* columnOfTheContainer = plan_[std::make_pair(xPos, yPos)];
+	Container* unloadedContainer = columnOfTheContainer->unloadTopContainer();
+
+	containersToColumnMap_.erase(unloadedContainer->getContainerId());
 	numOfContainersOnShip_ -= 1;
 
-	return true;
+	return unloadedContainer;
 }
 
-vector<vector<string>> ShipPlan::getInstructionsForUnloadAsVector(string& portCode) {
+vector<vector<string>> ShipPlan::getInstructionsForUnloadAtPort(string& portCode) {
 
 	vector<string> idsOfContainersToBeUnloaded = portsToContainersIdMap_[portCode];
 	vector<vector<string>> instructions;
 
 	std::map<std::pair<int, int>, int> colToNumOfContainersMap = createColumnToNumOfContainersToUnloadByPortMap(idsOfContainersToBeUnloaded);
 	vector<vector<string>> instrForCurrColumn;
-
 	std::map<std::pair<int, int>, int>::iterator it = colToNumOfContainersMap.begin();
+
 	while (it != colToNumOfContainersMap.end()) {
 
 		ShipPlanColumn* currColumn = plan_[it->first];
 		int numOfContainersToUnload = it->second;
 
-		instrForCurrColumn = currColumn->getInstructionsToUnloadContainer(portCode, numOfContainersToUnload);
+		instrForCurrColumn = currColumn->getInstructionsToUnloadContainers(portCode, numOfContainersToUnload);
 		instructions.insert(instructions.end(), instrForCurrColumn.begin(), instrForCurrColumn.end());
 
 		it++;
@@ -146,6 +138,7 @@ vector<vector<string>> ShipPlan::getInstructionsForUnloadAsVector(string& portCo
 	colToNumOfContainersMap.clear();
 	return instructions;
 }
+
 
 std::map<std::pair<int, int>, int> ShipPlan::createColumnToNumOfContainersToUnloadByPortMap(vector<string>& idsOfContainersToUnload) {
 
