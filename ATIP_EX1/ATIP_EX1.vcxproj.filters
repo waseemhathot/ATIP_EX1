@@ -18,9 +18,6 @@
     <ClCompile Include="container.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="file_IO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,9 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="container.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="file_IO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="constants.h">

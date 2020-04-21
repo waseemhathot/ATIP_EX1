@@ -3,7 +3,6 @@
 #include "ShipPlan.h"
 
 
-
 ShipPlan::ShipPlan(std::vector<std::vector<int>> shipPlanData) : numOfContainersOnShip_(0) {
 
 	numOfFloors_ = shipPlanData.at(0).at(0);
@@ -177,14 +176,19 @@ std::vector<std::vector<std::string>> ShipPlan::getInstructionsToUnloadAll() {
 	std::vector<std::vector<std::string>> instructions;
 	std::vector<std::vector<std::string>> currColumnInstructions;
 
-	for (auto [pos, column] : plan_) {
+	std::map<std::pair<int, int>, ShipPlanColumn*>::iterator it = plan_.begin();
+	while (it != plan_.end()) {
 
-		int numOfContainersInColumn = column->getNumOfContainers();
+		ShipPlanColumn* currColumn = it->second;
+
+		int numOfContainersInColumn = currColumn->getNumOfContainers();
 		if (numOfContainersInColumn > 0) {
 
-			currColumnInstructions = column->getInstructionsToUnloadAllContainers();
+			currColumnInstructions = currColumn->getInstructionsToUnloadAllContainers();
 			instructions.insert(instructions.end(), currColumnInstructions.begin(), currColumnInstructions.end());
 		}
+
+		it++;
 	}
 
 	return instructions;

@@ -3,7 +3,6 @@
 #include "ShipPlanColumn.h"
 
 
-
 ShipPlanColumn::ShipPlanColumn(int columnCapacity, int xPos, int yPos) :
 	columnCapacity_(columnCapacity),
 	numOfContainersInColumn_(0),

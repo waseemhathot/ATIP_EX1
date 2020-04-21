@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
-#include <filesystem>
+#include <stdio.h>
+#include <sys/stat.h>
 #include "Simulation.h"
 #include "constants.h"
 #include "WeightBalanceCalculator.h"
-
 
 Simulation::Simulation(std::string& pathToRootFolder, std::vector<Algorithm*>& algorithms) : pathToRootFolder_(pathToRootFolder) {
 
@@ -20,20 +20,18 @@ Simulation::~Simulation() {
 	algorithmVector_.clear();
 }
 
-void Simulation::initAlgorithms(std::filesystem::directory_entry travelEntry) {
+void Simulation::initAlgorithms(std::string& travelEntry) {
 
-	std::filesystem::path pathToShipPlan = travelEntry;
-	std::filesystem::path pathToShipRoute = travelEntry;
-	pathToShipPlan += InputFileConstants::nameOfShipPlanFile;
-	pathToShipRoute += InputFileConstants::nameOfShipRouteFile;
+	std::string pathToShipPlan = travelEntry + InputFileConstants::nameOfShipPlanFile;
+	std::string pathToShipRoute = travelEntry + InputFileConstants::nameOfShipRouteFile;
 
 	for (size_t i = 0; i < algorithmVector_.size(); i++) {
 
 		Algorithm* currAlgorithm = algorithmVector_.at(i);
 		WeightBalanceCalculator calculator = WeightBalanceCalculator();
 
-		currAlgorithm->readShipPlan(pathToShipPlan.u8string());
-		currAlgorithm->readShipRoute(pathToShipRoute.u8string());
+		currAlgorithm->readShipPlan(pathToShipPlan);
+		currAlgorithm->readShipRoute(pathToShipRoute);
 		currAlgorithm->setWeightBalanceCalculator(calculator);
 	}
 }
@@ -43,64 +41,58 @@ void Simulation::startSimulation() {
 	clearErrorsFile();
 	clearResultsFile();
 
-	if (std::filesystem::exists(pathToRootFolder_)) {
+	if (IsPathExist(pathToRootFolder_)) {
 
-		if (std::filesystem::is_directory(pathToRootFolder_)) {
+		int travelCount = 1;
 
-			int travelCount = 1;
-			std::filesystem::directory_iterator rootFolderIterator(pathToRootFolder_);
-			for (const auto& travelEntry : rootFolderIterator) {
+		std::string travelPath = pathToRootFolder_ + "/Travel_" + std::to_string(travelCount);
+		while (IsPathExist(travelPath)) {
 
-				if (std::filesystem::is_directory(travelEntry)) {
+			std::string traveResultsLine = "Results For Travel #:" + std::to_string(travelCount) + "\n";
+			writeResultsLine(traveResultsLine);
 
-					std::string traveResultsLine = "Results For Travel #:" + std::to_string(travelCount) + "\n";
-					writeResultsLine(traveResultsLine);
+			std::string traveErrorsLine = "\nErrors For Travel #:" + std::to_string(travelCount) + "\n";
+			std::cout << traveErrorsLine << std::endl;
 
-					std::string traveErrorsLine = "Errors For Travel #:" + std::to_string(travelCount) + "\n";
-					std::cerr << traveErrorsLine << std::endl;
+			initAlgorithms(travelPath);
 
-					initAlgorithms(travelEntry);
+			int algorithmCount = 1;
+			for (auto algorithm : algorithmVector_) {
 
-					int algorithmCount = 1;
-					for (auto algorithm : algorithmVector_) {
+				std::vector<std::string> shipRoute = algorithm->getShipRoute();
+				std::map<std::string, int> portCodeToNumOfStopsMap = getPortCodeToNumOfStopsMap(shipRoute);
 
-						std::vector<std::string> shipRoute = algorithm->getShipRoute();
-						std::map<std::string, int> portCodeToNumOfStopsMap = getPortCodeToNumOfStopsMap(shipRoute);
+				std::string algorithmErrorLine = "\n\tAlgorithm #" + std::to_string(algorithmCount) + " encountered the following Errors:\n";
+				std::cout << algorithmErrorLine << std::endl;
 
-						std::string algorithmErrorLine = "\tAlgorithm #" + std::to_string(algorithmCount) + " encountered the following Errors:\n";
-						std::cerr << algorithmErrorLine << std::endl;
+				for (auto port : shipRoute) {
 
-						for (auto port : shipRoute) {
+					int numOfStopsAlreadyMade = portCodeToNumOfStopsMap[port];
 
-							int numOfStopsAlreadyMade = portCodeToNumOfStopsMap[port];
-							std::filesystem::path travelFolderPath = travelEntry;
-							std::string travelFolderPathAsString = travelFolderPath.u8string();
-
-							traveShipToPort(algorithm, travelFolderPathAsString, port, numOfStopsAlreadyMade);
-							portCodeToNumOfStopsMap[port] += 1;
-						}
-
-
-
-						std::string instrsPeformed = std::to_string(algorithm->getOperationsPerformed());
-						std::string algorithmNum = std::to_string(algorithmCount);
-
-						std::string algorithmResultsLine = "\tAlgorithm #" + algorithmNum + " performed " + instrsPeformed + " instructions\n";
-						writeResultsLine(algorithmResultsLine);
-
-						algorithmCount += 1;
-					}
-
-					travelCount += 1;
+					traveShipToPort(algorithm, travelPath, port, numOfStopsAlreadyMade);
+					portCodeToNumOfStopsMap[port] += 1;
 				}
+
+
+
+				std::string instrsPeformed = std::to_string(algorithm->getOperationsPerformed());
+				std::string algorithmNum = std::to_string(algorithmCount);
+
+				std::string algorithmResultsLine = "\tAlgorithm #" + algorithmNum + " performed " + instrsPeformed + " instructions\n";
+				writeResultsLine(algorithmResultsLine);
+
+				algorithmCount += 1;
 			}
+
+			travelCount += 1;
+			travelPath = pathToRootFolder_ + "/Travel_" + std::to_string(travelCount);
 		}
 	}
 	else std::cout << "ERROR: Root folder path invalid" << std::endl;
 }
 
 
-std::map<std::string, int> Simulation::getPortCodeToNumOfStopsMap(std::vector<std::string> route) {
+std::map<std::string, int> Simulation::getPortCodeToNumOfStopsMap(std::vector<std::string>& route) {
 
 	std::map<std::string, int> portCodeToNumOfStopsMap;
 	for (auto port : route) {
@@ -159,4 +151,10 @@ void Simulation::clearErrorsFile() {
 
 	std::string pathToErrorsFile = pathToRootFolder_ + "/simulation.errors";
 	clearFile(pathToErrorsFile);
+}
+
+
+bool Simulation::IsPathExist(const std::string& path) {
+	struct stat buffer;
+	return (stat(path.c_str(), &buffer) == 0);
 }

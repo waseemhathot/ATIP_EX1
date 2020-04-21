@@ -59,14 +59,14 @@ std::vector<std::vector<std::string>> Algorithm::readFileByLineIntoVector(const 
 				result.push_back(tokensInLine);
 			}
 			else {
-				std::cerr << "\tERROR! Bad input: " << line << std::endl;
+				std::cout << "\tERROR! Bad input: " << line << std::endl;
 			}
 		}
 
 		fin.close();
 		return result;
 	}
-	else std::cerr << "\tERROR! Unable to open file: " << filePath << std::endl;
+	else std::cout << "\tERROR! Unable to open file: " << filePath << std::endl;
 
 	return result;
 }
@@ -88,6 +88,7 @@ void Algorithm::readShipRoute(const std::string& filePath) {
 
 void Algorithm::readShipPlan(const std::string& filePath) {
 
+	operationsPerformed_ = 0;
 	std::vector<std::vector<int>> shipPlan;
 	const std::regex shipPlanRegex(InputFileConstants::shipPlanRegexString);
 
@@ -149,7 +150,7 @@ void Algorithm::writeLinesToFile(const std::string& filePath, std::vector<std::s
 			fout << lines.at(i) << "\n";
 		}
 	}
-	else std::cerr << "\tERROR: Unable to open file" << std::endl;
+	else std::cout << "\tERROR: Unable to open file" << std::endl;
 
 	fout.close();
 }
@@ -253,13 +254,13 @@ void Algorithm::loadContainers(std::vector<Container*>& containers, const std::s
 		std::string destPort = currContainer->getDestCode();
 
 		if (!checkIfPortIsInRoute(destPort)) {
-			std::cerr << "\tERROR: destination is not on route, failed to load container with id " << containerId << std::endl;
+			std::cout << "\tERROR: destination is not on route, failed to load container with id " << containerId << std::endl;
 			continue;
 		}
 
 		std::vector<int> foundLocation = findSpaceToLoad();
 		if (foundLocation.empty()) {
-			std::cerr << "\tERROR: Ship is full, failed to load container with id " << containerId << std::endl;
+			std::cout << "\tERROR: Ship is full, failed to load container with id " << containerId << std::endl;
 			continue;
 		}
 
