@@ -142,6 +142,14 @@ void Algorithm::writeLinesToFile(const std::string& filePath, std::vector<std::s
 
 void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile, const std::string& pathToOutputInstructionsFile) {
 
+	clearOutputFile(pathToOutputInstructionsFile);
+	
+	if (portIndex_ == shipRoute_.size() - 1) {
+
+		unloadAllContainers(pathToOutputInstructionsFile);
+		return;
+	}
+
 	std::vector<std::string> instructionLines;
 	std::string currPortCode = shipRoute_.at(portIndex_);
 
@@ -165,7 +173,6 @@ void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile,
 	}
 
 	loadContainers(containersToLoad, pathToOutputInstructionsFile);
-
 	portIndex_ += 1;
 } 
 
@@ -250,5 +257,23 @@ std::vector<std::string> Algorithm::getShipRoute() {
 }
 
 
+void Algorithm::unloadAllContainers(const std::string& pathToOutputInstructionsFile) {
+
+	std::vector<std::vector<std::string>> instructionsToUnloadFromShipToPort = shipPlan_->getInstructionsToUnloadAll();
+	std::vector<Container*> unloadedContainers = unloadContainersAtPort(instructionsToUnloadFromShipToPort, pathToOutputInstructionsFile);
+
+	for (auto container : unloadedContainers) {
+		
+		delete container;
+	}
+}
 
 
+void Algorithm::clearOutputFile(const std::string& path) {
+
+	std::ofstream fout(path);
+	if (fout.is_open()) {
+
+		fout.close();
+	}
+}

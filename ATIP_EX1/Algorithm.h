@@ -22,6 +22,7 @@ public:
 	void readShipRoute(const std::string& filePath);
 	std::vector<std::string> getShipRoute();
 	void getInstructionsForCargo(const std::string& pathToInputCargoFile, const std::string& pathToOutputInstructionsFile);
+	void unloadAllContainers(const std::string& pathToOutputInstructionsFile);
 
 private:
 	bool isLineFormatValid(std::string& line, std::regex reg);
@@ -34,6 +35,7 @@ private:
 	std::vector<Container*> getContainersToLoadForCargo(std::vector<std::vector<std::string>>& cargoData);
 	std::vector<Container*> unloadContainersAtPort(std::vector<std::vector<std::string>>& unloadInstructions, const std::string& outputFilePath);
 	void loadContainers(std::vector<Container*>& containers, const std::string& outputFilePath);
+	void clearOutputFile(const std::string& path);
 };
 
 #endif

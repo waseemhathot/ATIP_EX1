@@ -79,13 +79,15 @@ std::vector<int> ShipPlan::findSpaceToLoad() {
 
 		ShipPlanColumn* column = it->second;
 		if (column->isThereSpaceAvailable()) {
-			
+
 			isSpaceFound = true;
 			int xPos = column->getXPos();
 			int yPos = column->getYPos();
 			int floor = column->getNumOfContainers();
 			location = { floor, xPos, yPos };
 		}
+
+		it++;
 	}
 
 	return location;
@@ -95,8 +97,22 @@ void ShipPlan::loadContainer(Container* container, int floor, int xPos, int yPos
 
 	std::pair<int, int> pos = std::make_pair(xPos, yPos);
 	ShipPlanColumn* selectedColumn = plan_[pos];
+	std::string containerId = container->getContainerId();
+
 	selectedColumn->loadContainer(container);
-	containersToColumnMap_[container->getContainerId()] = selectedColumn;
+
+	containersToColumnMap_[containerId] = selectedColumn;
+
+	std::string destCode = container->getDestCode();
+	if (portsToContainersIdMap_.find(destCode) != portsToContainersIdMap_.end()) {
+
+		portsToContainersIdMap_[destCode].push_back(containerId);
+	}
+	else {
+
+		portsToContainersIdMap_[destCode] = { containerId };
+	}
+
 	numOfContainersOnShip_ += 1;
 }
 
@@ -124,7 +140,7 @@ std::vector<std::vector<std::string>> ShipPlan::getInstructionsForUnloadAtPort(s
 		ShipPlanColumn* currColumn = plan_[it->first];
 		int numOfContainersToUnload = it->second;
 
-		std::vector<std::vector<std::string>> instrForCurrColumn = currColumn->getInstructionsToUnloadContainers(portCode, numOfContainersToUnload);
+		std::vector<std::vector<std::string>> instrForCurrColumn = currColumn->getInstructionsToUnloadContainersForPort(portCode, numOfContainersToUnload);
 		instructions.insert(instructions.end(), instrForCurrColumn.begin(), instrForCurrColumn.end());
 
 		it++;
@@ -156,3 +172,20 @@ std::map<std::pair<int, int>, int> ShipPlan::createColumnToNumOfContainersToUnlo
 	return columnToNumOfContainersToUnloadByPortMap;
 }
 
+std::vector<std::vector<std::string>> ShipPlan::getInstructionsToUnloadAll() {
+
+	std::vector<std::vector<std::string>> instructions;
+	std::vector<std::vector<std::string>> currColumnInstructions;
+
+	for (auto [pos, column] : plan_) {
+
+		int numOfContainersInColumn = column->getNumOfContainers();
+		if (numOfContainersInColumn > 0) {
+
+			currColumnInstructions = column->getInstructionsToUnloadAllContainers();
+			instructions.insert(instructions.end(), currColumnInstructions.begin(), currColumnInstructions.end());
+		}
+	}
+
+	return instructions;
+}

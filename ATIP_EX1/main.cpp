@@ -12,23 +12,23 @@
 
 int main(int argc, char** argv) {
 
-    if (argc!= InputFileConstants::numOfExpectedCommandLineArgs) {
+	if (argc != InputFileConstants::numOfExpectedCommandLineArgs) {
 
-        std::cout << "ERROR: Invalid Num Of Arguments" << std::endl;
-        return EXIT_FAILURE;
-    }
-    
-    std::vector<Algorithm*> algVec;
-    Algorithm* alg1 = new Algorithm();
-    algVec.push_back(alg1);
+		std::cout << "ERROR: Invalid Num Of Arguments" << std::endl;
+		return EXIT_FAILURE;
+	}
 
-    std::string pathToRootFolder = argv[1];
-    Simulation* simulation = new Simulation(pathToRootFolder, algVec);
-    simulation->startSimulation();
+	std::vector<Algorithm*> algVec;
+	Algorithm* alg1 = new Algorithm();
+	algVec.push_back(alg1);
 
-    delete simulation;
-    
-    return EXIT_SUCCESS;
+	std::string pathToRootFolder = argv[1];
+	Simulation* simulation = new Simulation(pathToRootFolder, algVec);
+	simulation->startSimulation();
+
+	delete simulation;
+
+	return EXIT_SUCCESS;
 }
 
 

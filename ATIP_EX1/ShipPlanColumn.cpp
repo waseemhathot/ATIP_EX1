@@ -15,7 +15,7 @@ ShipPlanColumn::~ShipPlanColumn() {
 	std::vector<Container*>::iterator it = containers_.begin();
 	while (it != containers_.end()) {
 
-		delete *it;
+		delete* it;
 		it++;
 	}
 
@@ -38,6 +38,7 @@ Container* ShipPlanColumn::unloadTopContainer() {
 
 	Container* topContainer = containers_.at(numOfContainersInColumn_ - 1);
 	containers_.pop_back();
+	numOfContainersInColumn_ -= 1;
 
 	return topContainer;
 }
@@ -72,7 +73,7 @@ std::pair<int, int> ShipPlanColumn::getPos() {
 }
 
 int ShipPlanColumn::getXPos() {
-	
+
 	return xPos_;
 }
 int ShipPlanColumn::getYPos() {
@@ -80,12 +81,29 @@ int ShipPlanColumn::getYPos() {
 	return yPos_;
 }
 
-std::vector<std::vector<std::string>> ShipPlanColumn::getInstructionsToUnloadContainers(std::string& portCode, int numOfContainersToUnloadForPort) {
+std::vector<std::vector<std::string>> ShipPlanColumn::getInstructionsToUnloadAllContainers() {
+
+	std::vector<std::vector<std::string>> instructions;
+
+	for (int i = numOfContainersInColumn_ - 1; i >= 0; i--) {
+
+		std::string currContainerId = containers_.at(i)->getContainerId();
+		std::string currContainerPortCode = containers_.at(i)->getDestCode();
+
+		std::vector<std::string> currInstruction = { currContainerId, std::to_string(i), std::to_string(xPos_), std::to_string(yPos_) };
+		instructions.push_back(currInstruction);
+	}
+
+	return instructions;
+}
+
+
+std::vector<std::vector<std::string>> ShipPlanColumn::getInstructionsToUnloadContainersForPort(std::string& portCode, int numOfContainersToUnloadForPort) {
 
 	std::vector<std::vector<std::string>> instructions;
 	int containersToUnloadFound = 0;
 
-	for (size_t i = containers_.size() - 1; i >= 0 && containersToUnloadFound < numOfContainersToUnloadForPort; i--) {
+	for (int i = numOfContainersInColumn_ - 1; i >= 0 && containersToUnloadFound < numOfContainersToUnloadForPort; i--) {
 
 		std::string currContainerId = containers_.at(i)->getContainerId();
 		std::string currContainerPortCode = containers_.at(i)->getDestCode();
