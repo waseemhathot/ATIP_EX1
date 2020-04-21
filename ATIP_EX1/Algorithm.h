@@ -41,6 +41,7 @@ private:
 	std::vector<Container*> unloadContainersAtPort(std::vector<std::vector<std::string>>& unloadInstructions, const std::string& outputFilePath);
 	void loadContainers(std::vector<Container*>& containers, const std::string& outputFilePath);
 	void clearOutputFile(const std::string& path);
+	bool checkIfPortIsInRoute(std::string& port);
 };
 
 #endif

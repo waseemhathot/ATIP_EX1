@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
 	if (argc != InputFileConstants::numOfExpectedCommandLineArgs) {
 
-		std::cout << "ERROR: Invalid Num Of Arguments" << std::endl;
+		std::cerr << "ERROR: Invalid Num Of Arguments" << std::endl;
 		return EXIT_FAILURE;
 	}
 

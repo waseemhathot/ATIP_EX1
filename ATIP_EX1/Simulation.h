@@ -24,7 +24,6 @@ private:
 	void traveShipToPort(Algorithm* algorithm, std::string& travelEntry, std::string& port, int numOfStopsAlreadyMade);
 	void writeLineToFile(std::string& line, std::string& path);
 	void writeResultsLine(std::string& line);
-	void writeErrorsLine(std::string& line);
 	void clearFile(std::string& path);
 	void clearResultsFile();
 	void clearErrorsFile();

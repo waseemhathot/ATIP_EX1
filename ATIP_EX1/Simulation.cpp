@@ -53,10 +53,13 @@ void Simulation::startSimulation() {
 			std::filesystem::directory_iterator rootFolderIterator(pathToRootFolder_);
 			for (const auto& travelEntry : rootFolderIterator) {
 
-				std::string traveResultsLine = "Results For Travel #" + travelCount;
-				writeResultsLine(traveResultsLine);
-
 				if (std::filesystem::is_directory(travelEntry)) {
+
+					std::string traveResultsLine = "Results For Travel #:" + std::to_string(travelCount) + "\n";
+					writeResultsLine(traveResultsLine);
+
+					std::string traveErrorsLine = "Errors For Travel #:" + std::to_string(travelCount) + "\n";
+					std::cerr << traveErrorsLine << std::endl;
 
 					initAlgorithms(travelEntry);
 					shipRoute_ = algorithmVector_.at(0)->getShipRoute();
@@ -64,6 +67,9 @@ void Simulation::startSimulation() {
 
 					int algorithmCount = 1;
 					for (auto algorithm : algorithmVector_) {
+
+						std::string algorithmErrorLine = "\tAlgorithm #" + std::to_string(algorithmCount) + " encountered the following Errors:\n";
+						std::cerr << algorithmErrorLine << std::endl;
 
 						for (auto port : shipRoute_) {
 
@@ -76,14 +82,15 @@ void Simulation::startSimulation() {
 
 						std::string instrsPeformed = std::to_string(algorithm->getOperationsPerformed());
 						std::string algorithmNum = std::to_string(algorithmCount);
-						std::string algorithmResultsLine = "Algorithm #" + algorithmNum + " performed " + instrsPeformed + " instructions";
+
+						std::string algorithmResultsLine = "\tAlgorithm #" + algorithmNum + " performed " + instrsPeformed + " instructions\n";
 						writeResultsLine(algorithmResultsLine);
 
 						algorithmCount += 1;
 					}
-				}
 
-				travelCount += 1;
+					travelCount += 1;
+				}		
 			}
 		}
 	}
@@ -123,21 +130,19 @@ void Simulation::traveShipToPort(Algorithm* algorithm, std::string& travelFolder
 void Simulation::writeLineToFile(std::string& line, std::string& path) {
 
 	std::ofstream fout(path, std::ofstream::app);
-	fout << line << "\n";
+	if (fout.is_open()) {
+		fout << line << "\n";
+	}
+
 	fout.close();
 }
 
 void Simulation::writeResultsLine(std::string& line) {
 
-	std::string pathToResultsFile = pathToRootFolder_ + "simulation.results";
+	std::string pathToResultsFile = pathToRootFolder_ + "/simulation.results";
 	writeLineToFile(line, pathToResultsFile);
 }
 
-void Simulation::writeErrorsLine(std::string& line) {
-
-	std::string pathToErrorssFile = pathToRootFolder_ + "simulation.errorss";
-	writeLineToFile(line, pathToErrorssFile);
-}
 
 void Simulation::clearFile(std::string& path) {
 	std::ofstream fout(path);
@@ -146,12 +151,12 @@ void Simulation::clearFile(std::string& path) {
 
 void Simulation::clearResultsFile() {
 
-	std::string pathToResultsFile = pathToRootFolder_ + "simulation.results";
+	std::string pathToResultsFile = pathToRootFolder_ + "/simulation.results";
 	clearFile(pathToResultsFile);
 }
 
 void Simulation::clearErrorsFile() {
 
-	std::string pathToErrorsFile = pathToRootFolder_ + "simulation.errors";
+	std::string pathToErrorsFile = pathToRootFolder_ + "/simulation.errors";
 	clearFile(pathToErrorsFile);
 }

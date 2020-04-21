@@ -59,14 +59,14 @@ std::vector<std::vector<std::string>> Algorithm::readFileByLineIntoVector(const 
 				result.push_back(tokensInLine);
 			}
 			else {
-				std::cout << "WARNING! Bad input: " << line << std::endl;
+				std::cerr << "\tERROR! Bad input: " << line << std::endl;
 			}
 		}
 
 		fin.close();
 		return result;
 	}
-	else std::cout << "Unable to open file: " << filePath << std::endl;
+	else std::cerr << "\tERROR! Unable to open file: " << filePath << std::endl;
 
 	return result;
 }
@@ -140,7 +140,7 @@ void Algorithm::writeLinesToFile(const std::string& filePath, std::vector<std::s
 			fout << lines.at(i) << "\n";
 		}
 	}
-	else std::cout << "Unable to open file" << std::endl;
+	else std::cerr << "\tERROR: Unable to open file" << std::endl;
 
 	fout.close();
 }
@@ -150,7 +150,7 @@ void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile,
 	clearOutputFile(pathToOutputInstructionsFile);
 
 	if (portIndex_ == shipRoute_.size() - 1) {
-
+		
 		unloadAllContainers(pathToOutputInstructionsFile);
 		return;
 	}
@@ -238,19 +238,28 @@ void Algorithm::loadContainers(std::vector<Container*>& containers, const std::s
 	std::vector<std::string> instructionLines;
 	for (size_t i = 0; i < containers.size(); i++) {
 
+		Container* currContainer = containers.at(i);
+		std::string containerId = currContainer->getContainerId();
+		std::string destPort = currContainer->getDestCode();
+
+		if (!checkIfPortIsInRoute(destPort)) {
+			std::cerr << "\tERROR: destination is not on route, failed to load container with id " << containerId << std::endl;
+			continue;
+		}
+
 		std::vector<int> foundLocation = findSpaceToLoad();
 		if (foundLocation.empty()) {
-
-			break;
+			std::cerr << "\tERROR: Ship is full, failed to load container with id " << containerId << std::endl;
+			continue;
 		}
 
 		int floor = foundLocation.at(0);
 		int xPos = foundLocation.at(1);
 		int yPos = foundLocation.at(2);
-		Container* currContainer = containers.at(i);
+		
 
 		shipPlan_->loadContainer(currContainer, floor, xPos, yPos);
-		std::string currInstructionLine = "L, " + currContainer->getContainerId() + ", " + std::to_string(floor) + ", " + std::to_string(xPos) + ", " + std::to_string(yPos);
+		std::string currInstructionLine = "L, " + containerId + ", " + std::to_string(floor) + ", " + std::to_string(xPos) + ", " + std::to_string(yPos);
 		instructionLines.push_back(currInstructionLine);
 		operationsPerformed_ += 1;
 	}
@@ -272,7 +281,6 @@ void Algorithm::unloadAllContainers(const std::string& pathToOutputInstructionsF
 	for (auto container : unloadedContainers) {
 
 		delete container;
-		operationsPerformed_ += 1;
 	}
 }
 
@@ -289,4 +297,18 @@ void Algorithm::clearOutputFile(const std::string& path) {
 int Algorithm::getOperationsPerformed() {
 
 	return operationsPerformed_;
+}
+
+bool Algorithm::checkIfPortIsInRoute(std::string& currPort) {
+
+	bool res = false;
+	for (auto port : shipRoute_) {
+
+		if (currPort == port) {
+			res = true;
+			break;
+		}
+	}
+
+	return res;
 }
