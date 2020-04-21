@@ -61,7 +61,7 @@ std::vector<std::vector<std::string>> Algorithm::readFileByLineIntoVector(const 
 		fin.close();
 		return result;
 	}
-	else std::cout << "Unable to open file" << std::endl;
+	else std::cout << "Unable to open file: "<< filePath << std::endl;
 
 	return result;
 }
@@ -110,9 +110,9 @@ void Algorithm::readShipPlan(const std::string& filePath) {
 				shipPlan.push_back(planLine);
 			}
 		}
-	}
 
-	shipPlan_ = new ShipPlan(shipPlan);
+		shipPlan_ = new ShipPlan(shipPlan);
+	}
 }
 
 std::vector<std::vector<std::string>> Algorithm::readPortCargo(const std::string& filePath) {
