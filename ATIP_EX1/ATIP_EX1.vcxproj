@@ -26,6 +26,7 @@
     <ClCompile Include="ShipPlan.cpp" />
     <ClCompile Include="ShipPlanColumn.cpp" />
     <ClCompile Include="Simulation.cpp" />
+    <ClCompile Include="WeightBalanceCalculator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="ShipPlan.h" />
     <ClInclude Include="ShipPlanColumn.h" />
     <ClInclude Include="Simulation.h" />
+    <ClInclude Include="WeightBalanceCalculator.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -7,11 +7,16 @@
 #include "Algorithm.h"
 
 
-Algorithm::Algorithm(): portIndex_(0), shipPlan_(NULL) {}
+Algorithm::Algorithm() : portIndex_(0), shipPlan_(NULL), operationsPerformed_(0) {}
 
 Algorithm::~Algorithm() {
-	
+
 	delete shipPlan_;
+}
+
+void Algorithm::setWeightBalanceCalculator(WeightBalanceCalculator& calc) {
+
+	calculator_ = calc;
 }
 
 bool Algorithm::isLineFormatValid(std::string& line, std::regex reg) {
@@ -61,7 +66,7 @@ std::vector<std::vector<std::string>> Algorithm::readFileByLineIntoVector(const 
 		fin.close();
 		return result;
 	}
-	else std::cout << "Unable to open file: "<< filePath << std::endl;
+	else std::cout << "Unable to open file: " << filePath << std::endl;
 
 	return result;
 }
@@ -77,7 +82,7 @@ void Algorithm::readShipRoute(const std::string& filePath) {
 
 		shipRoute.push_back(fileLinesInVector.at(i).at(0));
 	}
-	
+
 	shipRoute_ = shipRoute;
 }
 
@@ -143,7 +148,7 @@ void Algorithm::writeLinesToFile(const std::string& filePath, std::vector<std::s
 void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile, const std::string& pathToOutputInstructionsFile) {
 
 	clearOutputFile(pathToOutputInstructionsFile);
-	
+
 	if (portIndex_ == shipRoute_.size() - 1) {
 
 		unloadAllContainers(pathToOutputInstructionsFile);
@@ -174,7 +179,7 @@ void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile,
 
 	loadContainers(containersToLoad, pathToOutputInstructionsFile);
 	portIndex_ += 1;
-} 
+}
 
 
 std::vector<std::vector<std::string>> Algorithm::getInstructionsForUnloadAtPort(std::string& portCode) {
@@ -213,6 +218,7 @@ std::vector<Container*> Algorithm::unloadContainersAtPort(std::vector<std::vecto
 
 		instructionLines.push_back(currInstructionLine);
 		unloadedContainers.push_back(currContainer);
+		operationsPerformed_ += 1;
 	}
 
 	writeLinesToFile(outputFilePath, instructionLines);
@@ -246,6 +252,7 @@ void Algorithm::loadContainers(std::vector<Container*>& containers, const std::s
 		shipPlan_->loadContainer(currContainer, floor, xPos, yPos);
 		std::string currInstructionLine = "L, " + currContainer->getContainerId() + ", " + std::to_string(floor) + ", " + std::to_string(xPos) + ", " + std::to_string(yPos);
 		instructionLines.push_back(currInstructionLine);
+		operationsPerformed_ += 1;
 	}
 
 	writeLinesToFile(outputFilePath, instructionLines);
@@ -263,8 +270,9 @@ void Algorithm::unloadAllContainers(const std::string& pathToOutputInstructionsF
 	std::vector<Container*> unloadedContainers = unloadContainersAtPort(instructionsToUnloadFromShipToPort, pathToOutputInstructionsFile);
 
 	for (auto container : unloadedContainers) {
-		
+
 		delete container;
+		operationsPerformed_ += 1;
 	}
 }
 
@@ -276,4 +284,9 @@ void Algorithm::clearOutputFile(const std::string& path) {
 
 		fout.close();
 	}
+}
+
+int Algorithm::getOperationsPerformed() {
+
+	return operationsPerformed_;
 }

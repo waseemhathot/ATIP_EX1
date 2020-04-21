@@ -3,6 +3,7 @@
 #include <vector>
 #include <regex>
 #include "ShipPlan.h"
+#include "WeightBalanceCalculator.h"
 
 #ifndef ALGORITHM_H
 #define ALGORITHM_H
@@ -10,19 +11,23 @@
 class Algorithm {
 
 	ShipPlan* shipPlan_;
+	WeightBalanceCalculator calculator_;
 	std::vector<std::string> shipRoute_;
 	int portIndex_;
+	int operationsPerformed_;
+	
 
 public:
 	Algorithm();
 	~Algorithm();
 
-
+	void setWeightBalanceCalculator(WeightBalanceCalculator& calc);
 	void readShipPlan(const std::string& filePath);
 	void readShipRoute(const std::string& filePath);
 	std::vector<std::string> getShipRoute();
 	void getInstructionsForCargo(const std::string& pathToInputCargoFile, const std::string& pathToOutputInstructionsFile);
 	void unloadAllContainers(const std::string& pathToOutputInstructionsFile);
+	int getOperationsPerformed();
 
 private:
 	bool isLineFormatValid(std::string& line, std::regex reg);

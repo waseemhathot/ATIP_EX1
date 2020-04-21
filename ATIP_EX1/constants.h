@@ -20,6 +20,6 @@ namespace InputFileConstants {
 	const std::string nameOfShipRouteFile = "/ship_route.txt";
 }
 
-enum ShipOperation { L, U, R, M };
+enum class ShipOperation { L, U, R, M };
 
 #endif
