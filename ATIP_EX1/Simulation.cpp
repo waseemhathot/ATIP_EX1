@@ -18,8 +18,6 @@ Simulation::~Simulation() {
 		delete algorithm;
 	}
 	algorithmVector_.clear();
-	portCodeToNumOfStopsMap_.clear();
-	shipRoute_.clear();
 }
 
 void Simulation::initAlgorithms(std::filesystem::directory_entry travelEntry) {
@@ -62,23 +60,27 @@ void Simulation::startSimulation() {
 					std::cerr << traveErrorsLine << std::endl;
 
 					initAlgorithms(travelEntry);
-					shipRoute_ = algorithmVector_.at(0)->getShipRoute();
-					initPortCodeToNumOfStopsMap(shipRoute_);
 
 					int algorithmCount = 1;
 					for (auto algorithm : algorithmVector_) {
 
+						std::vector<std::string> shipRoute = algorithm->getShipRoute();
+						std::map<std::string, int> portCodeToNumOfStopsMap = getPortCodeToNumOfStopsMap(shipRoute);
+
 						std::string algorithmErrorLine = "\tAlgorithm #" + std::to_string(algorithmCount) + " encountered the following Errors:\n";
 						std::cerr << algorithmErrorLine << std::endl;
 
-						for (auto port : shipRoute_) {
+						for (auto port : shipRoute) {
 
-							int numOfStopsAlreadyMade = portCodeToNumOfStopsMap_[port];
+							int numOfStopsAlreadyMade = portCodeToNumOfStopsMap[port];
 							std::filesystem::path travelFolderPath = travelEntry;
-
 							std::string travelFolderPathAsString = travelFolderPath.u8string();
+
 							traveShipToPort(algorithm, travelFolderPathAsString, port, numOfStopsAlreadyMade);
+							portCodeToNumOfStopsMap[port] += 1;
 						}
+
+
 
 						std::string instrsPeformed = std::to_string(algorithm->getOperationsPerformed());
 						std::string algorithmNum = std::to_string(algorithmCount);
@@ -90,7 +92,7 @@ void Simulation::startSimulation() {
 					}
 
 					travelCount += 1;
-				}		
+				}
 			}
 		}
 	}
@@ -98,16 +100,15 @@ void Simulation::startSimulation() {
 }
 
 
-void Simulation::initPortCodeToNumOfStopsMap(std::vector<std::string> route) {
+std::map<std::string, int> Simulation::getPortCodeToNumOfStopsMap(std::vector<std::string> route) {
 
-	for (size_t i = 0; i < route.size(); i++) {
+	std::map<std::string, int> portCodeToNumOfStopsMap;
+	for (auto port : route) {
 
-		std::string currPortCode = route.at(i);
-		if (portCodeToNumOfStopsMap_.find(currPortCode) == portCodeToNumOfStopsMap_.end()) {
-
-			portCodeToNumOfStopsMap_[currPortCode] = 0;
-		}
+		portCodeToNumOfStopsMap[port] = 0;
 	}
+
+	return portCodeToNumOfStopsMap;
 }
 
 void Simulation::traveShipToPort(Algorithm* algorithm, std::string& travelFolderPath, std::string& port, int numOfStopsAlreadyMade) {
@@ -121,9 +122,8 @@ void Simulation::traveShipToPort(Algorithm* algorithm, std::string& travelFolder
 
 	cargoPath += cargoFileName;
 	instrOutputPath += outputFileName;
-	algorithm->getInstructionsForCargo(cargoPath, instrOutputPath);
 
-	portCodeToNumOfStopsMap_[port] += 1;
+	algorithm->getInstructionsForCargo(cargoPath, instrOutputPath);
 }
 
 

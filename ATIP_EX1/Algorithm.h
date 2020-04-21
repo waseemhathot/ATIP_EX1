@@ -15,7 +15,7 @@ class Algorithm {
 	std::vector<std::string> shipRoute_;
 	int portIndex_;
 	int operationsPerformed_;
-	
+
 
 public:
 	Algorithm();

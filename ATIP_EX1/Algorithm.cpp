@@ -116,7 +116,16 @@ void Algorithm::readShipPlan(const std::string& filePath) {
 			}
 		}
 
-		shipPlan_ = new ShipPlan(shipPlan);
+		if (shipPlan_ == NULL) {
+
+			shipPlan_ = new ShipPlan(shipPlan);
+		}
+		else {
+
+			delete shipPlan_;
+			shipPlan_ = new ShipPlan(shipPlan);
+		}
+
 	}
 }
 
@@ -150,14 +159,15 @@ void Algorithm::getInstructionsForCargo(const std::string& pathToInputCargoFile,
 	clearOutputFile(pathToOutputInstructionsFile);
 
 	if (portIndex_ == shipRoute_.size() - 1) {
-		
+
 		unloadAllContainers(pathToOutputInstructionsFile);
+		portIndex_ = 0;
 		return;
 	}
 
 	std::vector<std::string> instructionLines;
-	std::string currPortCode = shipRoute_.at(portIndex_);
 
+	std::string currPortCode = shipRoute_.at(portIndex_);
 	std::vector<std::vector<std::string>> cargoData = readPortCargo(pathToInputCargoFile);
 	std::vector<Container*> containersToLoad = getContainersToLoadForCargo(cargoData);
 
@@ -256,7 +266,7 @@ void Algorithm::loadContainers(std::vector<Container*>& containers, const std::s
 		int floor = foundLocation.at(0);
 		int xPos = foundLocation.at(1);
 		int yPos = foundLocation.at(2);
-		
+
 
 		shipPlan_->loadContainer(currContainer, floor, xPos, yPos);
 		std::string currInstructionLine = "L, " + containerId + ", " + std::to_string(floor) + ", " + std::to_string(xPos) + ", " + std::to_string(yPos);

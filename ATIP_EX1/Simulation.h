@@ -8,8 +8,8 @@ class Simulation {
 
 	std::string pathToRootFolder_;
 	std::vector<Algorithm*> algorithmVector_;
-	std::map<std::string, int> portCodeToNumOfStopsMap_;
-	std::vector<std::string> shipRoute_;
+	//std::map<std::string, int> portCodeToNumOfStopsMap_;
+	//std::vector<std::string> shipRoute_;
 
 public:
 
@@ -20,7 +20,7 @@ public:
 
 private:
 	void initAlgorithms(std::filesystem::directory_entry travelEntr);
-	void initPortCodeToNumOfStopsMap(std::vector<std::string> route);
+	std::map<std::string, int> getPortCodeToNumOfStopsMap(std::vector<std::string> route);
 	void traveShipToPort(Algorithm* algorithm, std::string& travelEntry, std::string& port, int numOfStopsAlreadyMade);
 	void writeLineToFile(std::string& line, std::string& path);
 	void writeResultsLine(std::string& line);

@@ -7,9 +7,6 @@
 #include "constants.h"
 
 
-
-
-
 int main(int argc, char** argv) {
 
 	if (argc != InputFileConstants::numOfExpectedCommandLineArgs) {
@@ -20,7 +17,9 @@ int main(int argc, char** argv) {
 
 	std::vector<Algorithm*> algVec;
 	Algorithm* alg1 = new Algorithm();
+	Algorithm* alg2 = new Algorithm();
 	algVec.push_back(alg1);
+	algVec.push_back(alg2);
 
 	std::string pathToRootFolder = argv[1];
 	Simulation* simulation = new Simulation(pathToRootFolder, algVec);
